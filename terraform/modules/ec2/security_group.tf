@@ -1,7 +1,7 @@
 # 보안 그룹 생성
-resource "aws_security_group" "jenkins_sg" {
-  name        = "${var.jenkins_name}-sg"
-  description = "Security group for Jenkins EC2 instance"
+resource "aws_security_group" "sg" {
+  name        = "${var.instance_name}-sg"
+  description = "Security group for EC2 instance"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -33,6 +33,6 @@ resource "aws_security_group" "jenkins_sg" {
   }
 
   tags = merge(local.common_tags,{
-    Name = "${var.jenkins_name}-sg"
+    Name = "${var.instance_name}-sg"
   })
 }

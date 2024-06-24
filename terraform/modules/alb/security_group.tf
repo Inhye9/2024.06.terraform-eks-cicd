@@ -1,6 +1,6 @@
 # Security Group 생성
 resource "aws_security_group" "alb_sg" {
-   name        = "${var.cluster_name}-alb-sg"
+   name        = "${var.alb_name}-alb-sg"
   description   = "Security group for Load Balancer"
   vpc_id = var.vpc_id
 
@@ -18,6 +18,13 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 8081
+    to_port     = 8081
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -26,7 +33,7 @@ resource "aws_security_group" "alb_sg" {
   }
 
   tags = merge(local.common_tags,{
-    Name = "${var.cluster_name}-alb-sg"
+    Name = "${var.alb_name}-alb-sg"
   })
 }
 

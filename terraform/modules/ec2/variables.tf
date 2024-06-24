@@ -13,15 +13,11 @@ variable "subnet_id" {
   type        = string
 }
 
-variable "cluster_name" {
+variable "instance_name" {
   description = "name for EKS Cluster"
   type        = string
 }
 
-variable "jenkins_name" {
-  description = "name for EC2 instance"
-  type        = string
-}
 
 variable "key_pair_name" {
   description = "Key pair name for EC2 instance"
@@ -38,7 +34,17 @@ variable "instance_profile_role" {
   type        = string
 }
 
-variable "alb_security_id" {
-  description = "load balancer security id"
+variable "load_balancer_arn" { 
+  description = "Using load balancer ARN"
+  type        = string
+}
+
+variable "alb_listener_port" {
+  description = "alb_listener_port"
+  type        = string
+}
+
+variable "alb_listener_instance_port" {
+  description = "alb_listener_instance_port"
   type        = string
 }

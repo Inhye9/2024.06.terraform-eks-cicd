@@ -8,18 +8,13 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "cluster_name" {
-  description = "name for EKS Cluster"
+variable "alb_name" {
+  description = "name for Loadbalancer Name"
   type        = string
 }
 
 variable "subnet_id" {
   description = "Subnet ID"
-  type        = string
-}
-
-variable "jenkins_id" {
-  description = "Jenkins EC2 ID"
   type        = string
 }
 

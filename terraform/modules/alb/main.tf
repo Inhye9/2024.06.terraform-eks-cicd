@@ -8,7 +8,7 @@ provider "aws" {
 locals {
   common_tags = {
     CreatedBy = "Terraform"
-    Group     = "${var.cluster_name}-group"
+    Group     = "${var.alb_name}-group"
   }
 }
 
@@ -60,7 +60,7 @@ locals {
 # ------------------------------------------------------------------------
 # ALB 생성
 resource "aws_lb" "public_lb" {
-  name               = "${var.cluster_name}-pub-alb"
+  name               = "${var.alb_name}-pub-alb"
   internal           = false     # 내부 접근 옵션/true: private-subnet, false: public-subnet
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
@@ -69,51 +69,11 @@ resource "aws_lb" "public_lb" {
   enable_deletion_protection = false  #삭제 보호 기능/true: 활성화, false: 비활성화
 
   tags = merge(local.common_tags,{
-    Name = "${var.cluster_name}-pub-alb"
+    Name = "${var.alb_name}-pub-alb"
   })
 }
 
-# Target Group 생성
-resource "aws_lb_target_group" "jenkins_tg" {
-  name        = "${var.cluster_name}-jenkins-tg"
-  port        = 8080
-  protocol    = "HTTP"
-  vpc_id      = var.vpc_id
-  target_type = "instance"
-
-  health_check {
-    path                = "/"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-  }
-
-  tags = merge(local.common_tags,{
-    Name = "${var.cluster_name}-jenkins-tg"
-  })
+output "load_balancer_arn" {
+  value = aws_lb.public_lb.arn
 }
 
-# Listener 생성
-resource "aws_lb_listener" "jenkins_listener" {
-  load_balancer_arn = aws_lb.public_lb.arn
-  port              = 80
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.jenkins_tg.arn
-  }
-
-  tags = merge(local.common_tags,{
-    Name = "${var.cluster_name}-jenkins-alb-listener"
-  })
-}
-
-
-# Target Group Attachment
-resource "aws_lb_target_group_attachment" "jenkins_attachment" {
-  target_group_arn = aws_lb_target_group.jenkins_tg.arn
-  target_id        = var.jenkins_id
-  port             = 8080
-}
