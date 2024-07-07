@@ -1,7 +1,7 @@
 application:
   name: blue-event
   build_number: 1
-  namespace: thm-app
+  namespace: eks-blue
   containers:
     image: nginx:latest
     resources:
@@ -54,17 +54,17 @@ service:
       - blue-event.eks-blue.com
     contextPath: /
     port: 80
-    targetPort: 9022
+    targetPort: 8080
 
-secret:
-  kms: true
-  jasypt: true
-  jwt: true
+# secret:
+#   kms: true
+#   jasypt: true
+#   jwt: true
 
-gateway:
-  - name: eks-blue-inner-gw
-    namespace: eks-blue-gateway
-    host: "*.eks-blue.com"
+# gateway:
+#   - name: eks-blue-inner-gw
+#     namespace: eks-blue-gateway
+#     host: "*.eks-blue.com"
     
 affinity:
   nodeAffinity:

@@ -33,52 +33,15 @@ spec:
             - name: service-port
               containerPort: {{ .Values.service.app.targetPort }}
           env:
-            - name: server.port
-              value: "{{ .Values.service.app.targetPort }}"
-            - name: spring.profiles.active
-              value: "{{ .Values.service.app.profile }}"
-            - name: spring.application.name
-              value: "{{ .Values.application.name }}"
             - name: build_version
               value: "{{ .Values.application.build_number }}"
-            {{ if .Values.secret.kms }}
-            - name: aws.kms.keyArn
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.application.name }}-aws-kms-secret
-                  key: keyArn
-            {{ end }}
-            {{ if .Values.secret.jasypt }}
-            - name: jasypt.encryptor.password
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.application.name }}-jasypt-secret
-                  key: encryptorPassword
-            {{ end }}
-            {{ if .Values.secret.jwt }}
-            - name: jwt.service.key
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.application.name }}-jwt-secret
-                  key: serviceKey
-            - name: jwt.member.access.key
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.application.name }}-jwt-secret
-                  key: memberAccessKey
-            - name: jwt.member.refresh.key
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.application.name }}-jwt-secret
-                  key: memberRefreshKey
-            {{ end }}
           resources:
             requests:
               memory: "{{ .Values.application.containers.resources.requests.memory }}"
               cpu: "{{ .Values.application.containers.resources.requests.cpu }}"
             limits:
               memory: "{{ .Values.application.containers.resources.limits.memory }}"
-              cpu: "{{ .Values.application.containers.resources.limits.cpu }}"
+              cpu: "{{ .Values.application.containers.resources.limits.cpu }} "
           {{ if .Values.application.probe.startupProbe }}
           startupProbe:
             httpGet:
@@ -116,8 +79,6 @@ spec:
             failureThreshold: 30
           {{ end }}
       terminationGracePeriodSeconds: {{ .Values.application.terminationGracePeriodSeconds }}
-      imagePullSecrets:
-        - name: {{ .Values.application.name }}-docker-secret
       {{- if .Values.affinity }}
       affinity: {{ toYaml .Values.affinity | nindent 8 }}
       {{- end }}
