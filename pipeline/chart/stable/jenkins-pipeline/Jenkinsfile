@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'flask-app'
+        DOCKER_IMAGE = "your-docker-repo/${APP_NAME}:${env.BUILD_ID}"
+        KUBERNETES_NAMESPACE = 'default'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    dockerImage = docker.build(DOCKER_IMAGE)
+                }
+            }
+        }
+
+        stage('Push') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    kubernetesDeploy(configs: 'k8s-deployment.yml', kubeconfigId: 'kubeconfig')
+                }
+            }
+        }
+    }
+}
